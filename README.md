@@ -1,1 +1,1 @@
-# westjourney-zlb60-oss
+# westjourney-oss
