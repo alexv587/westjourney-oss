@@ -39,7 +39,7 @@ jobs:
       - name: Run install@shell
         run: |
           npm install
-      - name: Run Generate All App Info
+      - name: Run Generate psbooks
         run: |
           npm run dev -- parse --input psbooks/psbooks.json --debug
       - name: Checkout Github Pages
