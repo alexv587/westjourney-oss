@@ -5,19 +5,20 @@ on:
 
 jobs:
   generate:
-    name: Generate on ${{ matrix.os }} with node.js ${{ matrix.node-version }}
+    name: Generate on ${{ matrix.os }} with node.js ${{ matrix.node-version }} psbooks ${{ matrix.index }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
         node-version: [18.x]
+        index: [0, 1, 2, 3, 4, 5, 6]
     permissions:
       contents: write
       # issues: write # 重写了 permissions，故而需要额外添加 contents 权限，不然 git clone 会失败
     env:
       GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
     concurrency:
-      group: ${{ github.ref }}
+      group: ${{ matrix.index }} - ${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: Checkout
@@ -41,7 +42,7 @@ jobs:
           npm install
       - name: Run Generate psbooks
         run: |
-          npm run dev -- parse --input psbooks/psbooks.json
+          npm run dev -- parse --input psbooks/psbooks.json --index ${{ matrix.index }}
       - name: Checkout Github Pages
         continue-on-error: true # 忽略 gh-pages 分支未创建
         uses: actions/checkout@v3
