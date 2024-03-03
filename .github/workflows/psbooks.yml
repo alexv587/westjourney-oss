@@ -1,0 +1,60 @@
+name: psbooks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    name: Generate on ${{ matrix.os }} with node.js ${{ matrix.node-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [18.x]
+    permissions:
+      contents: write
+      # issues: write # 重写了 permissions，故而需要额外添加 contents 权限，不然 git clone 会失败
+    env:
+      GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: alexv587/psbook-cli
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+      - name: Checkout psbooks
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: psbooks
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Run install@shell
+        run: |
+          npm install
+      - name: Run Generate All App Info
+        run: |
+          npm run dev -- parse --input psbooks/psbooks.json --debug
+      - name: Checkout Github Pages
+        continue-on-error: true # 忽略 gh-pages 分支未创建
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: gh-pages
+      - name: Merge Github Pages
+        run: |
+          # 避免 gh-pages 分支未创建
+          mkdir -p gh-pages
+          if [ -d dist/gh-pages ]; then cp -r dist/gh-pages/. gh-pages/; fi
+      - name: Deploy Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: gh-pages
+          branch: gh-pages
