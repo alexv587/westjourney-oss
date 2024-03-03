@@ -42,7 +42,7 @@ jobs:
           npm install
       - name: Run Generate psbooks
         run: |
-          npm run dev -- parse --input psbooks/psbooks.json --debug
+          npm run dev -- parse --input psbooks/psbooks.json --index 0
       - name: Checkout Github Pages
         continue-on-error: true # 忽略 gh-pages 分支未创建
         uses: actions/checkout@v3
