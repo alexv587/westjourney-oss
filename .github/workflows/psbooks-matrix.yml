@@ -1,4 +1,4 @@
-name: psbooks
+name: psbooks-matrix
 
 on:
   workflow_dispatch:
