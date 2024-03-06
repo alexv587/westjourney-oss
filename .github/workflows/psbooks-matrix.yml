@@ -43,6 +43,10 @@ jobs:
       - name: Run Generate psbooks
         run: |
           npm run dev -- parse --input psbooks/psbooks.json --index ${{ matrix.index }}
+      - name: Delete psbooks
+        run: |
+          # 删除书籍
+          rm -rf psbooks/
       - name: Checkout Github Pages
         continue-on-error: true # 忽略 gh-pages 分支未创建
         uses: actions/checkout@v3
@@ -51,8 +55,6 @@ jobs:
           path: gh-pages
       - name: Merge Github Pages
         run: |
-          # 删除书籍
-          rm -rf psbooks/
           # 避免 gh-pages 分支未创建
           mkdir -p gh-pages
           if [ -d dist/gh-pages ]; then mv dist/gh-pages/* gh-pages/; fi
