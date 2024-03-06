@@ -51,6 +51,8 @@ jobs:
           path: gh-pages
       - name: Merge Github Pages
         run: |
+          # 删除书籍
+          rm -rf psbooks/
           # 避免 gh-pages 分支未创建
           mkdir -p gh-pages
           if [ -d dist/gh-pages ]; then mv dist/gh-pages/* gh-pages/; fi
